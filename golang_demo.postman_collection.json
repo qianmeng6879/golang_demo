@@ -1,0 +1,72 @@
+{
+	"info": {
+		"_postman_id": "525e50f2-1f9b-4804-b393-71f478e3b521",
+		"name": "golang_demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "获取token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"zero\",\r\n    \"password\": \"admin\",\r\n    \"code\": 1321\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/token",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "解析token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyNmI0YmRkMC02ZGU0LTRlYTctYTc2Ny1lNDU0MDMzYTYxMTgiLCJpc3MiOiJvcGVuLm14emVyby50b3AiLCJzdWIiOiJ7XCJpZFwiOjEsXCJpc19hZG1pblwiOmZhbHNlLFwidXNlcm5hbWVcIjpcInplcm9cIn0iLCJleHAiOjE3MDM2OTg0NjcsImlhdCI6MTcwMzY5MTI2N30.UlLkv6pXasbHnyx_hqApfAMsWsA4oWpwSLrosd-udpg\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/token/verify",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"token",
+						"verify"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
