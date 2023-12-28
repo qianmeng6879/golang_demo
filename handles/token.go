@@ -1,8 +1,6 @@
 package handles
 
 import (
-	"fmt"
-
 	"github.com/cristalhq/jwt/v5"
 	"github.com/gin-gonic/gin"
 	"mxzero.top/models"
@@ -48,11 +46,8 @@ func TokenCreateHandle(c *gin.Context) {
 	c.Bind(&param)
 
 	if param.Username != "" && param.Password != "" {
-		fmt.Printf("username=%v password=%v\n", param.Username, param.Password)
-
 		var user models.User
 		models.Db.Where("username = ?", param.Username).First(&user)
-
 		if user.ID == 0 || user.Password != param.Password {
 			c.JSON(400, rest.Error("用户名与密码不匹配", 400))
 		} else {

@@ -15,13 +15,20 @@ func JWTAuthenticate() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
-		if !utils.VerifyToken(auth[7:]) {
+		var token = auth[7:]
+		if !utils.VerifyToken(token) {
 			ctx.JSON(401, rest.Error("未提供身份凭证", 401))
 			ctx.Abort()
 			return
 		}
 
+		subject, err := utils.ParseToken(token)
+		if err != nil {
+			ctx.JSON(401, rest.Error("认证失败", 401))
+			ctx.Abort()
+			return
+		}
+		ctx.Set("x-user-id", subject["id"])
 		ctx.Next()
 	}
 }
