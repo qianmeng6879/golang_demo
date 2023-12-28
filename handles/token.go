@@ -1,15 +1,13 @@
 package handles
 
 import (
-	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/cristalhq/jwt/v5"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"mxzero.top/models"
 	"mxzero.top/rest"
+	"mxzero.top/utils"
 )
 
 var key = []byte(`secret`)
@@ -35,28 +33,13 @@ func TokenVerifyHandle(c *gin.Context) {
 		return
 	}
 
-	newToken, _ := jwt.Parse([]byte(param.Token), verifier)
-
-	err := verifier.Verify(newToken)
+	subject, err := utils.ParseToken(param.Token)
 	if err != nil {
-		c.JSON(400, rest.Error("token无效", 400))
+		c.JSON(400, rest.Error(err.Error(), 400))
 		return
-	}
-	var newClaims jwt.RegisteredClaims
-	err = json.Unmarshal(newToken.Claims(), &newClaims)
-	if err != nil {
-		c.JSON(400, rest.Error("token无效", 400))
-		return
-	}
 
-	var subjectData map[string]interface{}
-	err = json.Unmarshal([]byte(newClaims.Subject), &subjectData)
-	if err != nil {
-		c.JSON(400, rest.Error("解析subject失败", 400))
-		return
 	}
-	c.JSON(200, rest.Success(subjectData))
-
+	c.JSON(200, rest.Success(subject))
 }
 
 // 获取token
@@ -69,30 +52,17 @@ func TokenCreateHandle(c *gin.Context) {
 
 		var user models.User
 		models.Db.Where("username = ?", param.Username).First(&user)
+
 		if user.ID == 0 || user.Password != param.Password {
 			c.JSON(400, rest.Error("用户名与密码不匹配", 400))
 		} else {
-			subject, _ := json.Marshal(map[string]interface{}{
+			var token = utils.CreateToken(map[string]interface{}{
 				"id":       user.ID,
 				"username": user.Username,
 				"is_admin": user.IsAdmin,
 			})
-
-			var current time.Time = time.Now()
-			var express time.Time = current.Add(2 * time.Hour)
-
-			claims := &jwt.RegisteredClaims{
-				ID:        uuid.New().String(),
-				Subject:   string(subject),
-				Issuer:    "open.mxzero.top",
-				IssuedAt:  jwt.NewNumericDate(current),
-				ExpiresAt: jwt.NewNumericDate(express),
-			}
-			token, _ := jwt.NewBuilder(signer).Build(claims)
-
-			var accessToken string = token.String()
 			c.JSON(200, rest.Success(map[string]interface{}{
-				"access_token": accessToken,
+				"access_token": token,
 				"express":      7200,
 			}))
 		}
